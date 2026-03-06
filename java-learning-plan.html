@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java & Spring Boot — Learning Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a25;
+    --border: #2a2a3a;
+    --accent: #f97316;
+    --accent2: #3b82f6;
+    --accent3: #10b981;
+    --accent4: #8b5cf6;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --grid: rgba(255,255,255,0.025);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 60px 24px 120px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    margin-bottom: 64px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .header-tag {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .header-tag::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 2px;
+    background: var(--accent);
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    color: #fff;
+    margin-bottom: 20px;
+  }
+
+  h1 span {
+    color: var(--accent);
+  }
+
+  .header-desc {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.8;
+    max-width: 560px;
+  }
+
+  /* Stats bar */
+  .stats-bar {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 56px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  .stat {
+    flex: 1;
+    padding: 20px 24px;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .stat:last-child { border-right: none; }
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Phase */
+  .phase {
+    margin-bottom: 40px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .phase:nth-child(1) { animation-delay: 0.15s; }
+  .phase:nth-child(2) { animation-delay: 0.2s; }
+  .phase:nth-child(3) { animation-delay: 0.25s; }
+  .phase:nth-child(4) { animation-delay: 0.3s; }
+  .phase:nth-child(5) { animation-delay: 0.35s; }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+  }
+
+  .phase-header:hover { background: var(--surface2); }
+
+  .phase-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  .phase-meta {
+    flex: 1;
+  }
+
+  .phase-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+  }
+
+  .phase-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 3px;
+    letter-spacing: 1px;
+  }
+
+  .phase-duration {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .phase-toggle {
+    font-size: 18px;
+    color: var(--muted);
+    transition: transform 0.3s;
+    flex-shrink: 0;
+    width: 20px;
+    text-align: center;
+  }
+
+  .phase-body {
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.35s ease;
+  }
+
+  .phase-body.collapsed {
+    grid-template-rows: 0fr;
+  }
+
+  .phase-body-inner {
+    overflow: hidden;
+  }
+
+  .phase-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  .topic-group {
+    padding: 24px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .topic-group:nth-child(even) { border-right: none; }
+  .topic-group:nth-last-child(-n+2) { border-bottom: none; }
+
+  .topic-group-title {
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .topic-list {
+    list-style: none;
+  }
+
+  .topic-list li {
+    font-size: 12px;
+    color: #c0c0d0;
+    padding: 5px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: color 0.2s;
+    border-radius: 4px;
+  }
+
+  .topic-list li:hover { color: #fff; }
+
+  .topic-list li::before {
+    content: '—';
+    color: var(--border);
+    flex-shrink: 0;
+    font-size: 10px;
+    margin-top: 2px;
+    transition: color 0.2s;
+  }
+
+  .topic-list li:hover::before { color: var(--accent); }
+
+  .topic-list li.done {
+    color: var(--muted);
+    text-decoration: line-through;
+  }
+
+  .topic-list li.done::before { color: var(--accent3); content: '✓'; }
+
+  /* Resources strip */
+  .resources-strip {
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .res-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-right: 4px;
+    white-space: nowrap;
+  }
+
+  .res-tag {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .res-tag:hover {
+    border-color: var(--accent2);
+    color: var(--accent2);
+  }
+
+  /* Progress section */
+  .progress-section {
+    margin-top: 56px;
+    animation: fadeUp 0.5s 0.4s ease both;
+  }
+
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .progress-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+  }
+
+  .prog-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    transition: border-color 0.2s;
+  }
+
+  .prog-card:hover { border-color: var(--accent); }
+
+  .prog-name {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+  }
+
+  .prog-bar-bg {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .prog-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+    width: 0%;
+  }
+
+  .prog-pct {
+    font-size: 20px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+  }
+
+  /* Color per phase */
+  .p1 { background: var(--accent); }
+  .p2 { background: var(--accent2); }
+  .p3 { background: var(--accent3); }
+  .p4 { background: var(--accent4); }
+  .p5 { background: #ec4899; }
+
+  .pn1 { background: rgba(249,115,22,0.15); color: var(--accent); }
+  .pn2 { background: rgba(59,130,246,0.15); color: var(--accent2); }
+  .pn3 { background: rgba(16,185,129,0.15); color: var(--accent3); }
+  .pn4 { background: rgba(139,92,246,0.15); color: var(--accent4); }
+  .pn5 { background: rgba(236,72,153,0.15); color: #ec4899; }
+
+  .phase-header.p1b { border-top: 3px solid var(--accent); }
+  .phase-header.p2b { border-top: 3px solid var(--accent2); }
+  .phase-header.p3b { border-top: 3px solid var(--accent3); }
+  .phase-header.p4b { border-top: 3px solid var(--accent4); }
+  .phase-header.p5b { border-top: 3px solid #ec4899; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 640px) {
+    .phase-content { grid-template-columns: 1fr; }
+    .topic-group { border-right: none !important; }
+    .topic-group:nth-last-child(-n+2) { border-bottom: 1px solid var(--border); }
+    .topic-group:last-child { border-bottom: none; }
+    .progress-grid { grid-template-columns: repeat(2, 1fr); }
+    .stats-bar { flex-direction: column; }
+    .stat { border-right: none; border-bottom: 1px solid var(--border); }
+    .stat:last-child { border-bottom: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-tag">Learning Roadmap</div>
+    <h1>Java & <span>Spring Boot</span><br>Backend Mastery</h1>
+    <p class="header-desc">A structured, phase-by-phase curriculum from zero Java knowledge to building production-grade REST APIs and microservices with Spring Boot.</p>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-num">5</div>
+      <div class="stat-label">Phases</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">~6mo</div>
+      <div class="stat-label">Total Duration</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">40+</div>
+      <div class="stat-label">Core Topics</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">5</div>
+      <div class="stat-label">Projects</div>
+    </div>
+  </div>
+
+  <!-- Phases -->
+
+  <!-- Phase 1 -->
+  <div class="phase">
+    <div class="phase-header p1b" onclick="togglePhase(this)">
+      <div class="phase-num pn1">01</div>
+      <div class="phase-meta">
+        <div class="phase-title">Java Fundamentals</div>
+        <div class="phase-sub">Core language · OOP · Standard Library</div>
+      </div>
+      <div class="phase-duration">4–6 weeks</div>
+      <div class="phase-toggle">▾</div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-body-inner">
+        <div class="phase-content">
+          <div class="topic-group">
+            <div class="topic-group-title">Language Basics</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Variables, data types & type casting</li>
+              <li onclick="toggleDone(this)">Control flow: if/else, switch, loops</li>
+              <li onclick="toggleDone(this)">Methods, parameters & return types</li>
+              <li onclick="toggleDone(this)">Arrays and varargs</li>
+              <li onclick="toggleDone(this)">String manipulation & StringBuilder</li>
+              <li onclick="toggleDone(this)">Exception handling: try/catch/finally</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Object-Oriented Programming</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Classes, objects & constructors</li>
+              <li onclick="toggleDone(this)">Encapsulation & access modifiers</li>
+              <li onclick="toggleDone(this)">Inheritance & method overriding</li>
+              <li onclick="toggleDone(this)">Abstract classes & interfaces</li>
+              <li onclick="toggleDone(this)">Polymorphism</li>
+              <li onclick="toggleDone(this)">Static vs instance members</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Collections & Generics</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">List, ArrayList, LinkedList</li>
+              <li onclick="toggleDone(this)">Map, HashMap, TreeMap</li>
+              <li onclick="toggleDone(this)">Set, HashSet</li>
+              <li onclick="toggleDone(this)">Iterators and for-each</li>
+              <li onclick="toggleDone(this)">Generic types & bounded wildcards</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Modern Java (Java 8+)</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Lambda expressions</li>
+              <li onclick="toggleDone(this)">Streams API (map, filter, reduce)</li>
+              <li onclick="toggleDone(this)">Optional</li>
+              <li onclick="toggleDone(this)">Functional interfaces</li>
+              <li onclick="toggleDone(this)">Records (Java 16+)</li>
+              <li onclick="toggleDone(this)">var keyword & local type inference</li>
+            </ul>
+          </div>
+        </div>
+        <div class="resources-strip">
+          <span class="res-label">Resources</span>
+          <a class="res-tag" href="https://www.amazon.com/Java-Complete-Reference-Twelfth/dp/1260463419" target="_blank">Java: The Complete Reference</a>
+          <a class="res-tag" href="https://www.jetbrains.com/academy/" target="_blank">JetBrains Academy</a>
+          <a class="res-tag" href="https://exercism.org/tracks/java" target="_blank">Exercism.io — Java Track</a>
+          <a class="res-tag" href="https://docs.oracle.com/en/java/" target="_blank">Official Java Docs</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 2 -->
+  <div class="phase">
+    <div class="phase-header p2b" onclick="togglePhase(this)">
+      <div class="phase-num pn2">02</div>
+      <div class="phase-meta">
+        <div class="phase-title">Tools, Build Systems & Advanced Java</div>
+        <div class="phase-sub">Maven/Gradle · Testing · Concurrency · Design Patterns</div>
+      </div>
+      <div class="phase-duration">3–4 weeks</div>
+      <div class="phase-toggle">▾</div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-body-inner">
+        <div class="phase-content">
+          <div class="topic-group">
+            <div class="topic-group-title">Build & Tooling</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Maven: pom.xml, lifecycle, dependencies</li>
+              <li onclick="toggleDone(this)">Gradle: build.gradle, tasks</li>
+              <li onclick="toggleDone(this)">Git: branching, merging, rebasing</li>
+              <li onclick="toggleDone(this)">IntelliJ IDEA productivity</li>
+              <li onclick="toggleDone(this)">Logging with SLF4J + Logback</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Testing</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">JUnit 5 — writing unit tests</li>
+              <li onclick="toggleDone(this)">Mockito — mocking dependencies</li>
+              <li onclick="toggleDone(this)">AssertJ — fluent assertions</li>
+              <li onclick="toggleDone(this)">Test-driven development (TDD) basics</li>
+              <li onclick="toggleDone(this)">Code coverage with JaCoCo</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Concurrency</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Threads & Runnable</li>
+              <li onclick="toggleDone(this)">ExecutorService & thread pools</li>
+              <li onclick="toggleDone(this)">CompletableFuture</li>
+              <li onclick="toggleDone(this)">synchronized, volatile, AtomicInteger</li>
+              <li onclick="toggleDone(this)">Common concurrency pitfalls</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Design Patterns</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Singleton, Factory, Builder</li>
+              <li onclick="toggleDone(this)">Strategy, Observer, Decorator</li>
+              <li onclick="toggleDone(this)">Repository & Service layer pattern</li>
+              <li onclick="toggleDone(this)">Dependency Injection concept</li>
+              <li onclick="toggleDone(this)">SOLID principles</li>
+            </ul>
+          </div>
+        </div>
+        <div class="resources-strip">
+          <span class="res-label">Resources</span>
+          <a class="res-tag" href="https://www.amazon.com/Effective-Java-Joshua-Bloch/dp/0134685997" target="_blank">Effective Java — Bloch</a>
+          <a class="res-tag" href="https://maven.apache.org/guides/" target="_blank">Maven Docs</a>
+          <a class="res-tag" href="https://junit.org/junit5/docs/current/user-guide/" target="_blank">JUnit 5 User Guide</a>
+          <a class="res-tag" href="https://refactoring.guru/design-patterns" target="_blank">Refactoring Guru Patterns</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 3 -->
+  <div class="phase">
+    <div class="phase-header p3b" onclick="togglePhase(this)">
+      <div class="phase-num pn3">03</div>
+      <div class="phase-meta">
+        <div class="phase-title">Spring Core & Spring Boot</div>
+        <div class="phase-sub">IoC · DI · Spring MVC · Data Access · REST APIs</div>
+      </div>
+      <div class="phase-duration">5–6 weeks</div>
+      <div class="phase-toggle">▾</div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-body-inner">
+        <div class="phase-content">
+          <div class="topic-group">
+            <div class="topic-group-title">Spring Core</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">IoC container & ApplicationContext</li>
+              <li onclick="toggleDone(this)">@Component, @Service, @Repository</li>
+              <li onclick="toggleDone(this)">Constructor & field injection</li>
+              <li onclick="toggleDone(this)">Bean scopes & lifecycle</li>
+              <li onclick="toggleDone(this)">@Configuration & @Bean</li>
+              <li onclick="toggleDone(this)">Profiles & @Conditional</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Spring Boot Essentials</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Spring Initializr & project structure</li>
+              <li onclick="toggleDone(this)">Auto-configuration mechanism</li>
+              <li onclick="toggleDone(this)">application.properties / YAML</li>
+              <li onclick="toggleDone(this)">@ConfigurationProperties</li>
+              <li onclick="toggleDone(this)">Spring Boot DevTools</li>
+              <li onclick="toggleDone(this)">Actuator & health endpoints</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Building REST APIs</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">@RestController, @RequestMapping</li>
+              <li onclick="toggleDone(this)">Path variables & request params</li>
+              <li onclick="toggleDone(this)">Request body & @Valid validation</li>
+              <li onclick="toggleDone(this)">ResponseEntity & HTTP status codes</li>
+              <li onclick="toggleDone(this)">Global exception handling @ControllerAdvice</li>
+              <li onclick="toggleDone(this)">OpenAPI / Swagger documentation</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Data Access</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Spring Data JPA & Hibernate</li>
+              <li onclick="toggleDone(this)">Entity mapping & relationships</li>
+              <li onclick="toggleDone(this)">JpaRepository & custom queries</li>
+              <li onclick="toggleDone(this)">Database migrations with Flyway/Liquibase</li>
+              <li onclick="toggleDone(this)">Transaction management @Transactional</li>
+              <li onclick="toggleDone(this)">Connection pooling (HikariCP)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="resources-strip">
+          <span class="res-label">Resources</span>
+          <a class="res-tag" href="https://spring.io/docs" target="_blank">Spring Docs (spring.io)</a>
+          <a class="res-tag" href="https://www.manning.com/books/spring-in-action-sixth-edition" target="_blank">Spring in Action — Craig Walls</a>
+          <a class="res-tag" href="https://www.baeldung.com" target="_blank">Baeldung.com</a>
+          <a class="res-tag" href="https://docs.spring.io/spring-boot/docs/current/reference/html/" target="_blank">Spring Boot Reference Guide</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 4 -->
+  <div class="phase">
+    <div class="phase-header p4b" onclick="togglePhase(this)">
+      <div class="phase-num pn4">04</div>
+      <div class="phase-meta">
+        <div class="phase-title">Security, Testing & Production Readiness</div>
+        <div class="phase-sub">Spring Security · JWT · Integration Testing · Docker</div>
+      </div>
+      <div class="phase-duration">4–5 weeks</div>
+      <div class="phase-toggle">▾</div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-body-inner">
+        <div class="phase-content">
+          <div class="topic-group">
+            <div class="topic-group-title">Spring Security</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Security filter chain</li>
+              <li onclick="toggleDone(this)">Username/password authentication</li>
+              <li onclick="toggleDone(this)">JWT-based stateless authentication</li>
+              <li onclick="toggleDone(this)">Role-based authorization</li>
+              <li onclick="toggleDone(this)">OAuth2 & OpenID Connect basics</li>
+              <li onclick="toggleDone(this)">CSRF, CORS, and security headers</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Advanced Testing</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">@SpringBootTest integration tests</li>
+              <li onclick="toggleDone(this)">@WebMvcTest slice tests</li>
+              <li onclick="toggleDone(this)">@DataJpaTest repository tests</li>
+              <li onclick="toggleDone(this)">Testcontainers for real DBs</li>
+              <li onclick="toggleDone(this)">WireMock for external services</li>
+              <li onclick="toggleDone(this)">RestAssured for API testing</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Caching & Messaging</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Spring Cache abstraction & Redis</li>
+              <li onclick="toggleDone(this)">@Cacheable, @CacheEvict</li>
+              <li onclick="toggleDone(this)">Async processing @Async</li>
+              <li onclick="toggleDone(this)">Spring Events (ApplicationEvent)</li>
+              <li onclick="toggleDone(this)">Kafka or RabbitMQ basics</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Docker & Deployment</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Dockerfile for Spring Boot apps</li>
+              <li onclick="toggleDone(this)">Docker Compose for local stack</li>
+              <li onclick="toggleDone(this)">Environment variables & secrets</li>
+              <li onclick="toggleDone(this)">CI/CD with GitHub Actions</li>
+              <li onclick="toggleDone(this)">Deploy to Fly.io / Render / AWS</li>
+            </ul>
+          </div>
+        </div>
+        <div class="resources-strip">
+          <span class="res-label">Resources</span>
+          <a class="res-tag" href="https://docs.spring.io/spring-security/reference/" target="_blank">Spring Security Docs</a>
+          <a class="res-tag" href="https://testcontainers.com/" target="_blank">Testcontainers Docs</a>
+          <a class="res-tag" href="https://docs.docker.com" target="_blank">Docker Docs</a>
+          <a class="res-tag" href="https://www.amigoscode.com/" target="_blank">Amigoscode — Spring Security</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 5 -->
+  <div class="phase">
+    <div class="phase-header p5b" onclick="togglePhase(this)">
+      <div class="phase-num pn5">05</div>
+      <div class="phase-meta">
+        <div class="phase-title">Microservices & System Design</div>
+        <div class="phase-sub">Spring Cloud · Observability · Distributed Patterns</div>
+      </div>
+      <div class="phase-duration">4–5 weeks</div>
+      <div class="phase-toggle">▾</div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-body-inner">
+        <div class="phase-content">
+          <div class="topic-group">
+            <div class="topic-group-title">Spring Cloud</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Spring Cloud Config Server</li>
+              <li onclick="toggleDone(this)">Service discovery with Eureka</li>
+              <li onclick="toggleDone(this)">API Gateway (Spring Cloud Gateway)</li>
+              <li onclick="toggleDone(this)">Load balancing with Spring LB</li>
+              <li onclick="toggleDone(this)">Resilience4j: circuit breaker, retry</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Observability</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Structured logging & log aggregation</li>
+              <li onclick="toggleDone(this)">Micrometer + Prometheus metrics</li>
+              <li onclick="toggleDone(this)">Distributed tracing with Zipkin</li>
+              <li onclick="toggleDone(this)">Spring Boot Actuator advanced</li>
+              <li onclick="toggleDone(this)">Grafana dashboards</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Data & Patterns</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Event-driven architecture</li>
+              <li onclick="toggleDone(this)">Saga pattern for distributed transactions</li>
+              <li onclick="toggleDone(this)">CQRS basics</li>
+              <li onclick="toggleDone(this)">Outbox pattern</li>
+              <li onclick="toggleDone(this)">Database per service</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Capstone Project</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Design a multi-service system</li>
+              <li onclick="toggleDone(this)">Implement auth service + API gateway</li>
+              <li onclick="toggleDone(this)">Add a domain service (e.g. orders)</li>
+              <li onclick="toggleDone(this)">Event messaging between services</li>
+              <li onclick="toggleDone(this)">Full CI/CD pipeline & cloud deployment</li>
+            </ul>
+          </div>
+        </div>
+        <div class="resources-strip">
+          <span class="res-label">Resources</span>
+          <a class="res-tag" href="https://spring.io/projects/spring-cloud" target="_blank">Spring Cloud Docs</a>
+          <a class="res-tag" href="https://microservices.io/book" target="_blank">Microservices Patterns — Richardson</a>
+          <a class="res-tag" href="https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/" target="_blank">Designing Data-Intensive Apps — Kleppmann</a>
+          <a class="res-tag" href="https://www.sivalabs.in/" target="_blank">SivaLabs Blog</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress tracker -->
+  <div class="progress-section">
+    <div class="section-label">Phase Progress Tracker</div>
+    <div class="progress-grid" id="progressGrid">
+      <div class="prog-card">
+        <div class="prog-name">Phase 01 — Java Fundamentals</div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill p1" id="pb1"></div></div>
+        <div class="prog-pct" id="pp1">0%</div>
+      </div>
+      <div class="prog-card">
+        <div class="prog-name">Phase 02 — Tools & Patterns</div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill p2" id="pb2"></div></div>
+        <div class="prog-pct" id="pp2">0%</div>
+      </div>
+      <div class="prog-card">
+        <div class="prog-name">Phase 03 — Spring Boot</div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill p3" id="pb3"></div></div>
+        <div class="prog-pct" id="pp3">0%</div>
+      </div>
+      <div class="prog-card">
+        <div class="prog-name">Phase 04 — Security & Docker</div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill p4" id="pb4"></div></div>
+        <div class="prog-pct" id="pp4">0%</div>
+      </div>
+      <div class="prog-card">
+        <div class="prog-name">Phase 05 — Microservices</div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill p5" id="pb5"></div></div>
+        <div class="prog-pct" id="pp5">0%</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center; margin-top:48px; animation: fadeUp 0.5s 0.5s ease both;">
+    <p style="font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:14px;">Continue Your Journey</p>
+    <div style="display:flex; justify-content:center; gap:16px; flex-wrap:wrap;">
+      <a href="backend-devops-learning-plan.html"
+        style="display:inline-flex; align-items:center; gap:12px; padding:14px 28px; background:var(--surface); border:1px solid var(--border); border-radius:8px; text-decoration:none; font-family:'Syne',sans-serif; font-weight:700; font-size:15px; color:#fff; letter-spacing:-0.3px; transition:border-color 0.2s, background 0.2s;"
+        onmouseover="this.style.borderColor='var(--accent)'; this.style.background='var(--surface2)'"
+        onmouseout="this.style.borderColor='var(--border)'; this.style.background='var(--surface)'">
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--accent); font-weight:400;">Next →</span>
+        Backend &amp; DevOps Mastery
+      </a>
+      <a href="ai-engineering-learning-plan.html"
+        style="display:inline-flex; align-items:center; gap:12px; padding:14px 28px; background:var(--surface); border:1px solid var(--border); border-radius:8px; text-decoration:none; font-family:'Syne',sans-serif; font-weight:700; font-size:15px; color:#fff; letter-spacing:-0.3px; transition:border-color 0.2s, background 0.2s;"
+        onmouseover="this.style.borderColor='var(--accent4)'; this.style.background='var(--surface2)'"
+        onmouseout="this.style.borderColor='var(--border)'; this.style.background='var(--surface)'">
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--accent4); font-weight:400;">Jump →</span>
+        AI Engineering
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const STORAGE_KEY = 'java-roadmap-progress';
+
+  // Give every topic item a stable ID based on its text content
+  function getItemId(li) {
+    return 'topic:' + li.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+  }
+
+  function saveProgress() {
+    const done = [];
+    document.querySelectorAll('.topic-list li.done').forEach(li => {
+      done.push(getItemId(li));
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(done));
+  }
+
+  function loadProgress() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      const savedSet = new Set(saved);
+      document.querySelectorAll('.topic-list li').forEach(li => {
+        if (savedSet.has(getItemId(li))) {
+          li.classList.add('done');
+        }
+      });
+    } catch (e) {
+      console.warn('Could not load saved progress:', e);
+    }
+  }
+
+  function togglePhase(header) {
+    const body = header.nextElementSibling;
+    const toggle = header.querySelector('.phase-toggle');
+    const collapsed = body.classList.toggle('collapsed');
+    toggle.style.transform = collapsed ? 'rotate(-90deg)' : 'rotate(0deg)';
+  }
+
+  function toggleDone(li) {
+    li.classList.toggle('done');
+    saveProgress();
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const phases = document.querySelectorAll('.phase');
+    phases.forEach((phase, i) => {
+      const all = phase.querySelectorAll('.topic-list li');
+      const done = phase.querySelectorAll('.topic-list li.done');
+      const pct = all.length ? Math.round((done.length / all.length) * 100) : 0;
+      const bar = document.getElementById(`pb${i+1}`);
+      const label = document.getElementById(`pp${i+1}`);
+      if (bar) bar.style.width = pct + '%';
+      if (label) label.textContent = pct + '%';
+    });
+  }
+
+  window.addEventListener('load', () => {
+    loadProgress();
+    setTimeout(updateProgress, 300);
+  });
+</script>
+</body>
+</html>

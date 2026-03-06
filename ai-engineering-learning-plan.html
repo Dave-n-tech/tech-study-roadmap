@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Engineering — Learning Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a25;
+    --border: #2a2a3a;
+    --accent: #f97316;
+    --accent2: #3b82f6;
+    --accent3: #10b981;
+    --accent4: #8b5cf6;
+    --accent5: #ec4899;
+    --accent6: #06b6d4;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --grid: rgba(255,255,255,0.025);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 60px 24px 120px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .header {
+    margin-bottom: 64px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .header-tag {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent4);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .header-tag::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 2px;
+    background: var(--accent4);
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    color: #fff;
+    margin-bottom: 20px;
+  }
+
+  h1 span { color: var(--accent4); }
+
+  .header-desc {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.8;
+    max-width: 560px;
+  }
+
+  .stats-bar {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 56px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  .stat {
+    flex: 1;
+    padding: 20px 24px;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .stat:last-child { border-right: none; }
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent4);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .phase {
+    margin-bottom: 40px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .phase:nth-child(1) { animation-delay: 0.15s; }
+  .phase:nth-child(2) { animation-delay: 0.20s; }
+  .phase:nth-child(3) { animation-delay: 0.25s; }
+  .phase:nth-child(4) { animation-delay: 0.30s; }
+  .phase:nth-child(5) { animation-delay: 0.35s; }
+  .phase:nth-child(6) { animation-delay: 0.40s; }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+  }
+
+  .phase-header:hover { background: var(--surface2); }
+
+  .phase-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  .phase-meta { flex: 1; }
+
+  .phase-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+  }
+
+  .phase-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 3px;
+    letter-spacing: 1px;
+  }
+
+  .phase-duration {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .phase-toggle {
+    font-size: 18px;
+    color: var(--muted);
+    transition: transform 0.3s;
+    flex-shrink: 0;
+    width: 20px;
+    text-align: center;
+  }
+
+  .phase-body {
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.35s ease;
+  }
+
+  .phase-body.collapsed { grid-template-rows: 0fr; }
+  .phase-body-inner { overflow: hidden; }
+
+  .phase-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+  }
+
+  .topic-group {
+    padding: 24px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .topic-group:nth-child(3n)        { border-right: none; }
+  .topic-group:nth-last-child(-n+3) { border-bottom: none; }
+
+  .topic-group-title {
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .topic-list { list-style: none; }
+
+  .topic-list li {
+    font-size: 12px;
+    color: #c0c0d0;
+    padding: 5px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: color 0.2s;
+    border-radius: 4px;
+  }
+
+  .topic-list li:hover { color: #fff; }
+
+  .topic-list li::before {
+    content: '—';
+    color: var(--border);
+    flex-shrink: 0;
+    font-size: 10px;
+    margin-top: 2px;
+    transition: color 0.2s;
+  }
+
+  .topic-list li:hover::before { color: var(--accent4); }
+
+  .topic-list li.done {
+    color: var(--muted);
+    text-decoration: line-through;
+  }
+
+  .topic-list li.done::before { color: var(--accent3); content: '✓'; }
+
+  .resources-strip {
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .res-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-right: 4px;
+    white-space: nowrap;
+  }
+
+  .res-tag {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .res-tag:hover { border-color: var(--accent4); color: var(--accent4); }
+
+  .progress-section {
+    margin-top: 56px;
+    animation: fadeUp 0.5s 0.45s ease both;
+  }
+
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .progress-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+  }
+
+  .prog-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    transition: border-color 0.2s;
+  }
+
+  .prog-card:hover { border-color: var(--accent4); }
+
+  .prog-name {
+    font-size: 10px;
+    color: var(--muted);
+    margin-bottom: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .prog-bar-bg {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .prog-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+    width: 0%;
+  }
+
+  .prog-pct {
+    font-size: 20px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+  }
+
+  .pn1 { background: rgba(139,92,246,0.15);  color: var(--accent4); }
+  .pn2 { background: rgba(59,130,246,0.15);  color: var(--accent2); }
+  .pn3 { background: rgba(236,72,153,0.15);  color: var(--accent5); }
+  .pn4 { background: rgba(16,185,129,0.15);  color: var(--accent3); }
+  .pn5 { background: rgba(249,115,22,0.15);  color: var(--accent); }
+  .pn6 { background: rgba(6,182,212,0.15);   color: var(--accent6); }
+
+  .phase-header.p1b { border-top: 3px solid var(--accent4); }
+  .phase-header.p2b { border-top: 3px solid var(--accent2); }
+  .phase-header.p3b { border-top: 3px solid var(--accent5); }
+  .phase-header.p4b { border-top: 3px solid var(--accent3); }
+  .phase-header.p5b { border-top: 3px solid var(--accent); }
+  .phase-header.p6b { border-top: 3px solid var(--accent6); }
+
+  .pb1 { background: var(--accent4); }
+  .pb2 { background: var(--accent2); }
+  .pb3 { background: var(--accent5); }
+  .pb4 { background: var(--accent3); }
+  .pb5 { background: var(--accent); }
+  .pb6 { background: var(--accent6); }
+
+  .reset-btn {
+    display: block;
+    margin: 24px auto 0;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 8px 20px;
+    border-radius: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .reset-btn:hover { border-color: var(--accent4); color: var(--accent4); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 720px) {
+    .phase-content { grid-template-columns: 1fr 1fr; }
+    .topic-group:nth-child(3n)        { border-right: 1px solid var(--border); }
+    .topic-group:nth-child(even)      { border-right: none; }
+    .topic-group:nth-last-child(-n+3) { border-bottom: 1px solid var(--border); }
+    .topic-group:nth-last-child(-n+2) { border-bottom: none; }
+    .topic-group:last-child           { border-bottom: none; }
+    .progress-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @media (max-width: 500px) {
+    .phase-content { grid-template-columns: 1fr; }
+    .topic-group { border-right: none !important; border-bottom: 1px solid var(--border) !important; }
+    .topic-group:last-child { border-bottom: none !important; }
+    .progress-grid { grid-template-columns: repeat(2, 1fr); }
+    .stats-bar { flex-direction: column; }
+    .stat { border-right: none; border-bottom: 1px solid var(--border); }
+    .stat:last-child { border-bottom: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-tag">Learning Roadmap</div>
+    <h1>AI <span>Engineering</span><br>Mastery</h1>
+    <p class="header-desc">A complete roadmap from Python and math foundations to building production-grade AI systems — covering machine learning, deep learning, LLMs, RAG, agents, MLOps, and AI system design.</p>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-num">6</div>
+      <div class="stat-label">Phases</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">~9mo</div>
+      <div class="stat-label">Total Duration</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">65+</div>
+      <div class="stat-label">Core Topics</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">6</div>
+      <div class="stat-label">Projects</div>
+    </div>
+  </div>
+
+  <!-- Phase 1 -->
+  <div class="phase">
+    <div class="phase-header p1b" onclick="togglePhase(this)">
+      <div class="phase-num pn1">01</div>
+      <div class="phase-meta">
+        <div class="phase-title">Python & Math Foundations</div>
+        <div class="phase-sub">Python · NumPy · Pandas · Linear Algebra · Calculus · Statistics</div>
+      </div>
+      <div class="phase-duration">5–6 weeks</div>
+      <div class="phase-toggle">▾</div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-body-inner">
+        <div class="phase-content">
+          <div class="topic-group">
+            <div class="topic-group-title">Python for Data & AI</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Python data types, comprehensions, generators</li>
+              <li onclick="toggleDone(this)">NumPy: arrays, broadcasting, vectorization</li>
+              <li onclick="toggleDone(this)">Pandas: DataFrames, groupby, merging</li>
+              <li onclick="toggleDone(this)">Matplotlib & Seaborn for visualization</li>
+              <li onclick="toggleDone(this)">Jupyter notebooks & Google Colab</li>
+              <li onclick="toggleDone(this)">Virtual environments & dependency management</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Linear Algebra</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Vectors, matrices & tensors</li>
+              <li onclick="toggleDone(this)">Matrix multiplication & dot products</li>
+              <li onclick="toggleDone(this)">Eigenvalues & eigenvectors</li>
+              <li onclick="toggleDone(this)">SVD & matrix decompositions</li>
+              <li onclick="toggleDone(this)">Norms and distance metrics</li>
+              <li onclick="toggleDone(this)">Dimensionality & linear transformations</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Calculus & Statistics</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Derivatives, gradients & chain rule</li>
+              <li onclick="toggleDone(this)">Partial derivatives & Jacobians</li>
+              <li onclick="toggleDone(this)">Probability distributions: Gaussian, Bernoulli</li>
+              <li onclick="toggleDone(this)">Bayes' theorem & conditional probability</li>
+              <li onclick="toggleDone(this)">Expectation, variance, covariance</li>
+              <li onclick="toggleDone(this)">Maximum likelihood estimation (MLE)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="resources-strip">
+          <span class="res-label">Resources</span>
+          <a class="res-tag" href="https://course.fast.ai/" target="_blank">fast.ai — Practical AI</a>
+          <a class="res-tag" href="https://numpy.org/doc/stable/user/quickstart.html" target="_blank">NumPy Quickstart</a>
+          <a class="res-tag" href="https://www.khanacademy.org/math/linear-algebra" target="_blank">Khan Academy — Linear Algebra</a>
+          <a class="res-tag" href="https://www.3blue1brown.com/topics/linear-algebra" target="_blank">3Blue1Brown — Essence of LA</a>
+          <a class="res-tag" href="https://pandas.pydata.org/docs/getting_started/index.html" target="_blank">Pandas Docs</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 2 -->
+  <div class="phase">
+    <div class="phase-header p2b" onclick="togglePhase(this)">
+      <div class="phase-num pn2">02</div>
+      <div class="phase-meta">
+        <div class="phase-title">Machine Learning Fundamentals</div>
+        <div class="phase-sub">Scikit-learn · Supervised Learning · Model Evaluation · Feature Engineering</div>
+      </div>
+      <div class="phase-duration">5–6 weeks</div>
+      <div class="phase-toggle">▾</div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-body-inner">
+        <div class="phase-content">
+          <div class="topic-group">
+            <div class="topic-group-title">Supervised Learning</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Linear & logistic regression</li>
+              <li onclick="toggleDone(this)">Decision trees & random forests</li>
+              <li onclick="toggleDone(this)">Gradient boosting: XGBoost, LightGBM</li>
+              <li onclick="toggleDone(this)">Support vector machines (SVM)</li>
+              <li onclick="toggleDone(this)">k-Nearest Neighbors (k-NN)</li>
+              <li onclick="toggleDone(this)">Naive Bayes classifiers</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Unsupervised & Evaluation</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">K-means & hierarchical clustering</li>
+              <li onclick="toggleDone(this)">PCA for dimensionality reduction</li>
+              <li onclick="toggleDone(this)">Anomaly detection basics</li>
+              <li onclick="toggleDone(this)">Train/val/test splits & cross-validation</li>
+              <li onclick="toggleDone(this)">Metrics: accuracy, F1, AUC-ROC, RMSE</li>
+              <li onclick="toggleDone(this)">Bias-variance tradeoff & overfitting</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Feature Engineering & Pipelines</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Feature scaling & normalization</li>
+              <li onclick="toggleDone(this)">Handling missing values & outliers</li>
+              <li onclick="toggleDone(this)">Encoding categorical variables</li>
+              <li onclick="toggleDone(this)">Feature selection & importance</li>
+              <li onclick="toggleDone(this)">Scikit-learn Pipeline API</li>
+              <li onclick="toggleDone(this)">Hyperparameter tuning: GridSearch, Optuna</li>
+            </ul>
+          </div>
+        </div>
+        <div class="resources-strip">
+          <span class="res-label">Resources</span>
+          <a class="res-tag" href="https://scikit-learn.org/stable/user_guide.html" target="_blank">Scikit-learn User Guide</a>
+          <a class="res-tag" href="https://www.statlearning.com/" target="_blank">Introduction to Statistical Learning (free)</a>
+          <a class="res-tag" href="https://www.kaggle.com/learn/intro-to-machine-learning" target="_blank">Kaggle ML Course</a>
+          <a class="res-tag" href="https://xgboost.readthedocs.io/en/stable/" target="_blank">XGBoost Docs</a>
+          <a class="res-tag" href="https://optuna.readthedocs.io/en/stable/" target="_blank">Optuna Docs</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 3 -->
+  <div class="phase">
+    <div class="phase-header p3b" onclick="togglePhase(this)">
+      <div class="phase-num pn3">03</div>
+      <div class="phase-meta">
+        <div class="phase-title">Deep Learning</div>
+        <div class="phase-sub">PyTorch · Neural Networks · CNNs · RNNs · Transformers</div>
+      </div>
+      <div class="phase-duration">6–7 weeks</div>
+      <div class="phase-toggle">▾</div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-body-inner">
+        <div class="phase-content">
+          <div class="topic-group">
+            <div class="topic-group-title">Neural Network Fundamentals</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Perceptrons & activation functions</li>
+              <li onclick="toggleDone(this)">Forward pass & backpropagation</li>
+              <li onclick="toggleDone(this)">Loss functions: cross-entropy, MSE</li>
+              <li onclick="toggleDone(this)">Optimizers: SGD, Adam, AdamW</li>
+              <li onclick="toggleDone(this)">Regularization: dropout, batch norm, weight decay</li>
+              <li onclick="toggleDone(this)">Learning rate scheduling</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">PyTorch & Architectures</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Tensors, autograd & computation graphs</li>
+              <li onclick="toggleDone(this)">nn.Module, DataLoader, training loops</li>
+              <li onclick="toggleDone(this)">Convolutional networks (CNNs) for vision</li>
+              <li onclick="toggleDone(this)">Recurrent networks: LSTM, GRU</li>
+              <li onclick="toggleDone(this)">Transfer learning & fine-tuning</li>
+              <li onclick="toggleDone(this)">GPU training & mixed precision</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Transformers & Attention</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Attention mechanism & self-attention</li>
+              <li onclick="toggleDone(this)">Transformer architecture (encoder/decoder)</li>
+              <li onclick="toggleDone(this)">Positional encoding</li>
+              <li onclick="toggleDone(this)">BERT, GPT & ViT families</li>
+              <li onclick="toggleDone(this)">Hugging Face Transformers library</li>
+              <li onclick="toggleDone(this)">Tokenization strategies (BPE, WordPiece)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="resources-strip">
+          <span class="res-label">Resources</span>
+          <a class="res-tag" href="https://pytorch.org/tutorials/" target="_blank">PyTorch Tutorials</a>
+          <a class="res-tag" href="https://www.deeplearning.ai/courses/deep-learning-specialization/" target="_blank">DeepLearning.AI Specialization</a>
+          <a class="res-tag" href="https://course.fast.ai/" target="_blank">fast.ai Practical Deep Learning</a>
+          <a class="res-tag" href="https://huggingface.co/learn" target="_blank">Hugging Face Learn</a>
+          <a class="res-tag" href="https://www.youtube.com/@AndrejKarpathy" target="_blank">Andrej Karpathy — YouTube</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 4 -->
+  <div class="phase">
+    <div class="phase-header p4b" onclick="togglePhase(this)">
+      <div class="phase-num pn4">04</div>
+      <div class="phase-meta">
+        <div class="phase-title">LLMs, RAG & Generative AI</div>
+        <div class="phase-sub">Prompt Engineering · Embeddings · Vector DBs · Fine-tuning · Agents</div>
+      </div>
+      <div class="phase-duration">6–7 weeks</div>
+      <div class="phase-toggle">▾</div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-body-inner">
+        <div class="phase-content">
+          <div class="topic-group">
+            <div class="topic-group-title">LLMs & Prompt Engineering</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">LLM internals: pretraining, RLHF, instruction tuning</li>
+              <li onclick="toggleDone(this)">Prompt engineering: zero/few-shot, CoT</li>
+              <li onclick="toggleDone(this)">OpenAI, Anthropic & open-source APIs</li>
+              <li onclick="toggleDone(this)">Structured outputs & function calling</li>
+              <li onclick="toggleDone(this)">Context windows & token management</li>
+              <li onclick="toggleDone(this)">Evaluation: BLEU, ROUGE, LLM-as-judge</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Embeddings & RAG</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Text embeddings & semantic search</li>
+              <li onclick="toggleDone(this)">Vector databases: Pinecone, Qdrant, pgvector</li>
+              <li onclick="toggleDone(this)">RAG pipeline: chunking, indexing, retrieval</li>
+              <li onclick="toggleDone(this)">Hybrid search: keyword + semantic</li>
+              <li onclick="toggleDone(this)">Reranking & context compression</li>
+              <li onclick="toggleDone(this)">Advanced RAG: HyDE, multi-query, RAPTOR</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Fine-tuning & Agents</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">LoRA & QLoRA parameter-efficient fine-tuning</li>
+              <li onclick="toggleDone(this)">Dataset preparation & instruction tuning</li>
+              <li onclick="toggleDone(this)">LangChain & LlamaIndex frameworks</li>
+              <li onclick="toggleDone(this)">AI agents: ReAct, tool use, memory</li>
+              <li onclick="toggleDone(this)">Multi-agent orchestration</li>
+              <li onclick="toggleDone(this)">Guardrails, safety & output validation</li>
+            </ul>
+          </div>
+        </div>
+        <div class="resources-strip">
+          <span class="res-label">Resources</span>
+          <a class="res-tag" href="https://www.deeplearning.ai/short-courses/" target="_blank">DeepLearning.AI Short Courses</a>
+          <a class="res-tag" href="https://python.langchain.com/docs/introduction/" target="_blank">LangChain Docs</a>
+          <a class="res-tag" href="https://docs.llamaindex.ai/en/stable/" target="_blank">LlamaIndex Docs</a>
+          <a class="res-tag" href="https://platform.openai.com/docs" target="_blank">OpenAI API Docs</a>
+          <a class="res-tag" href="https://github.com/huggingface/peft" target="_blank">Hugging Face PEFT (LoRA)</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 5 -->
+  <div class="phase">
+    <div class="phase-header p5b" onclick="togglePhase(this)">
+      <div class="phase-num pn5">05</div>
+      <div class="phase-meta">
+        <div class="phase-title">MLOps & Production Deployment</div>
+        <div class="phase-sub">Experiment Tracking · Model Serving · Monitoring · CI/CD for ML</div>
+      </div>
+      <div class="phase-duration">5–6 weeks</div>
+      <div class="phase-toggle">▾</div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-body-inner">
+        <div class="phase-content">
+          <div class="topic-group">
+            <div class="topic-group-title">Experiment Tracking & Registry</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">MLflow: runs, experiments, artifact tracking</li>
+              <li onclick="toggleDone(this)">Weights & Biases (W&B) dashboards</li>
+              <li onclick="toggleDone(this)">Model versioning & registry</li>
+              <li onclick="toggleDone(this)">Reproducibility: seeds, configs, environments</li>
+              <li onclick="toggleDone(this)">DVC for data & model versioning</li>
+              <li onclick="toggleDone(this)">Feature stores: Feast, Tecton basics</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Model Serving</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">REST APIs for model inference (FastAPI)</li>
+              <li onclick="toggleDone(this)">Model formats: ONNX, TorchScript, SavedModel</li>
+              <li onclick="toggleDone(this)">Triton Inference Server</li>
+              <li onclick="toggleDone(this)">vLLM & TGI for LLM serving</li>
+              <li onclick="toggleDone(this)">Batching, caching & latency optimization</li>
+              <li onclick="toggleDone(this)">AWS SageMaker / Vertex AI deployment</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">CI/CD for ML & Monitoring</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">ML pipelines: Kubeflow, ZenML, Prefect</li>
+              <li onclick="toggleDone(this)">Automated retraining triggers</li>
+              <li onclick="toggleDone(this)">Data drift & concept drift detection</li>
+              <li onclick="toggleDone(this)">Model performance monitoring</li>
+              <li onclick="toggleDone(this)">LLM observability: LangSmith, Helicone</li>
+              <li onclick="toggleDone(this)">A/B testing & shadow deployments</li>
+            </ul>
+          </div>
+        </div>
+        <div class="resources-strip">
+          <span class="res-label">Resources</span>
+          <a class="res-tag" href="https://mlflow.org/docs/latest/index.html" target="_blank">MLflow Docs</a>
+          <a class="res-tag" href="https://docs.wandb.ai/" target="_blank">Weights & Biases Docs</a>
+          <a class="res-tag" href="https://dvc.org/doc" target="_blank">DVC Docs</a>
+          <a class="res-tag" href="https://docs.vllm.ai/en/latest/" target="_blank">vLLM Docs</a>
+          <a class="res-tag" href="https://madewithml.com/" target="_blank">Made With ML (MLOps course)</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 6 -->
+  <div class="phase">
+    <div class="phase-header p6b" onclick="togglePhase(this)">
+      <div class="phase-num pn6">06</div>
+      <div class="phase-meta">
+        <div class="phase-title">Advanced AI Systems & Architecture</div>
+        <div class="phase-sub">Multimodal · Evals · AI Safety · Distributed Training · System Design</div>
+      </div>
+      <div class="phase-duration">5–6 weeks</div>
+      <div class="phase-toggle">▾</div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-body-inner">
+        <div class="phase-content">
+          <div class="topic-group">
+            <div class="topic-group-title">Multimodal & Frontier Models</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Vision-language models (CLIP, LLaVA, GPT-4V)</li>
+              <li onclick="toggleDone(this)">Image generation: diffusion models, SDXL</li>
+              <li onclick="toggleDone(this)">Audio models: Whisper, speech synthesis</li>
+              <li onclick="toggleDone(this)">Video understanding & generation</li>
+              <li onclick="toggleDone(this)">Multimodal RAG pipelines</li>
+              <li onclick="toggleDone(this)">Model context protocol (MCP)</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Evals & AI Safety</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Evaluation frameworks: HELM, MMLU, lm-eval</li>
+              <li onclick="toggleDone(this)">Custom eval design & human annotation</li>
+              <li onclick="toggleDone(this)">Red-teaming & adversarial testing</li>
+              <li onclick="toggleDone(this)">Alignment: RLHF, DPO, constitutional AI</li>
+              <li onclick="toggleDone(this)">Responsible AI: bias, fairness, explainability</li>
+              <li onclick="toggleDone(this)">AI regulation & compliance basics</li>
+            </ul>
+          </div>
+          <div class="topic-group">
+            <div class="topic-group-title">Distributed Training & Scale</div>
+            <ul class="topic-list">
+              <li onclick="toggleDone(this)">Data parallelism & model parallelism</li>
+              <li onclick="toggleDone(this)">DeepSpeed & FSDP for large model training</li>
+              <li onclick="toggleDone(this)">Quantization: INT8, GPTQ, AWQ</li>
+              <li onclick="toggleDone(this)">Flash Attention & memory optimization</li>
+              <li onclick="toggleDone(this)">Capstone: end-to-end AI product design</li>
+              <li onclick="toggleDone(this)">Cost optimization for inference at scale</li>
+            </ul>
+          </div>
+        </div>
+        <div class="resources-strip">
+          <span class="res-label">Resources</span>
+          <a class="res-tag" href="https://github.com/EleutherAI/lm-evaluation-harness" target="_blank">LM Evaluation Harness</a>
+          <a class="res-tag" href="https://www.deepspeed.ai/getting-started/" target="_blank">DeepSpeed Docs</a>
+          <a class="res-tag" href="https://huggingface.co/docs/diffusers/index" target="_blank">HF Diffusers Docs</a>
+          <a class="res-tag" href="https://arxiv.org/abs/2203.02155" target="_blank">InstructGPT Paper (RLHF)</a>
+          <a class="res-tag" href="https://www.anthropic.com/research" target="_blank">Anthropic Research</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress tracker -->
+  <div class="progress-section">
+    <div class="section-label">Phase Progress Tracker</div>
+    <div class="progress-grid">
+      <div class="prog-card">
+        <div class="prog-name">Phase 01 — Python & Math</div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill pb1" id="pb1"></div></div>
+        <div class="prog-pct" id="pp1">0%</div>
+      </div>
+      <div class="prog-card">
+        <div class="prog-name">Phase 02 — ML Fundamentals</div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill pb2" id="pb2"></div></div>
+        <div class="prog-pct" id="pp2">0%</div>
+      </div>
+      <div class="prog-card">
+        <div class="prog-name">Phase 03 — Deep Learning</div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill pb3" id="pb3"></div></div>
+        <div class="prog-pct" id="pp3">0%</div>
+      </div>
+      <div class="prog-card">
+        <div class="prog-name">Phase 04 — LLMs & RAG</div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill pb4" id="pb4"></div></div>
+        <div class="prog-pct" id="pp4">0%</div>
+      </div>
+      <div class="prog-card">
+        <div class="prog-name">Phase 05 — MLOps</div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill pb5" id="pb5"></div></div>
+        <div class="prog-pct" id="pp5">0%</div>
+      </div>
+      <div class="prog-card">
+        <div class="prog-name">Phase 06 — Advanced & Scale</div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill pb6" id="pb6"></div></div>
+        <div class="prog-pct" id="pp6">0%</div>
+      </div>
+    </div>
+    <button class="reset-btn" onclick="resetProgress()">Reset All Progress</button>
+  </div>
+
+  <div style="text-align:center; margin-top:48px; animation: fadeUp 0.5s 0.5s ease both;">
+    <p style="font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:14px;">Navigate Roadmaps</p>
+    <div style="display:flex; justify-content:center; gap:16px; flex-wrap:wrap;">
+      <a href="java-learning-plan.html"
+        style="display:inline-flex; align-items:center; gap:12px; padding:14px 28px; background:var(--surface); border:1px solid var(--border); border-radius:8px; text-decoration:none; font-family:'Syne',sans-serif; font-weight:700; font-size:15px; color:#fff; letter-spacing:-0.3px; transition:border-color 0.2s, background 0.2s;"
+        onmouseover="this.style.borderColor='var(--accent)'; this.style.background='var(--surface2)'"
+        onmouseout="this.style.borderColor='var(--border)'; this.style.background='var(--surface)'">
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--accent); font-weight:400;">← Back</span>
+        Java &amp; Spring Boot
+      </a>
+      <a href="backend-devops-learning-plan.html"
+        style="display:inline-flex; align-items:center; gap:12px; padding:14px 28px; background:var(--surface); border:1px solid var(--border); border-radius:8px; text-decoration:none; font-family:'Syne',sans-serif; font-weight:700; font-size:15px; color:#fff; letter-spacing:-0.3px; transition:border-color 0.2s, background 0.2s;"
+        onmouseover="this.style.borderColor='var(--accent2)'; this.style.background='var(--surface2)'"
+        onmouseout="this.style.borderColor='var(--border)'; this.style.background='var(--surface)'">
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--accent2); font-weight:400;">← Back</span>
+        Backend &amp; DevOps
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const STORAGE_KEY = 'ai-engineering-roadmap-v1';
+
+  function getItemId(li) {
+    return 'topic:' + li.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+  }
+
+  function saveProgress() {
+    const done = [];
+    document.querySelectorAll('.topic-list li.done').forEach(li => done.push(getItemId(li)));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(done));
+  }
+
+  function loadProgress() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      const savedSet = new Set(saved);
+      document.querySelectorAll('.topic-list li').forEach(li => {
+        if (savedSet.has(getItemId(li))) li.classList.add('done');
+      });
+    } catch (e) { console.warn('Progress load error:', e); }
+  }
+
+  function resetProgress() {
+    if (!confirm('Reset all progress? This cannot be undone.')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    document.querySelectorAll('.topic-list li.done').forEach(li => li.classList.remove('done'));
+    updateProgress();
+  }
+
+  function togglePhase(header) {
+    const body = header.nextElementSibling;
+    const toggle = header.querySelector('.phase-toggle');
+    const collapsed = body.classList.toggle('collapsed');
+    toggle.style.transform = collapsed ? 'rotate(-90deg)' : 'rotate(0deg)';
+  }
+
+  function toggleDone(li) {
+    li.classList.toggle('done');
+    saveProgress();
+    updateProgress();
+  }
+
+  function updateProgress() {
+    document.querySelectorAll('.phase').forEach((phase, i) => {
+      const all = phase.querySelectorAll('.topic-list li');
+      const done = phase.querySelectorAll('.topic-list li.done');
+      const pct = all.length ? Math.round((done.length / all.length) * 100) : 0;
+      const bar = document.getElementById(`pb${i+1}`);
+      const label = document.getElementById(`pp${i+1}`);
+      if (bar) bar.style.width = pct + '%';
+      if (label) label.textContent = pct + '%';
+    });
+  }
+
+  window.addEventListener('load', () => {
+    loadProgress();
+    setTimeout(updateProgress, 300);
+  });
+</script>
+</body>
+</html>
