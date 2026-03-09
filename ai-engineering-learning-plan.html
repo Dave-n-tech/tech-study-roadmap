@@ -53,6 +53,28 @@
     z-index: 1;
   }
 
+  /* Home link */
+  .home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: 1px;
+    margin-bottom: 24px;
+    transition: color 0.2s;
+    animation: fadeUp 0.4s ease both;
+  }
+  .home-link:hover { color: var(--accent4); }
+  .home-link svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+  }
+
   .header {
     margin-bottom: 64px;
     animation: fadeUp 0.6s ease both;
@@ -449,6 +471,11 @@
 </head>
 <body>
 <div class="container">
+
+  <a href="index.html" class="home-link">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Home
+  </a>
 
   <div class="header">
     <div class="header-tag">Learning Roadmap</div>

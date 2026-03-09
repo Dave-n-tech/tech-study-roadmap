@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kubernetes Cloud Native — Course Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a25;
+    --border: #2a2a3a;
+    --c1: #f97316;
+    --c2: #3b82f6;
+    --c3: #10b981;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --grid: rgba(255,255,255,0.025);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 60px 24px 120px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── HOME LINK ── */
+  .home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: 1px;
+    margin-bottom: 24px;
+    transition: color 0.2s;
+    animation: fadeUp 0.4s ease both;
+  }
+  .home-link:hover { color: var(--c2); }
+  .home-link svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+  }
+
+  /* ── HEADER ── */
+  .header { margin-bottom: 48px; animation: fadeUp 0.6s ease both; }
+
+  .header-tag {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--c2);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .header-tag::before {
+    content: '';
+    display: inline-block;
+    width: 24px; height: 2px;
+    background: var(--c2);
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(32px, 5vw, 58px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    color: #fff;
+    margin-bottom: 16px;
+  }
+
+  h1 span { color: var(--c2); }
+
+  .header-desc {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.8;
+    max-width: 600px;
+  }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    display: flex;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 40px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  .stat {
+    flex: 1;
+    padding: 18px 20px;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .stat:last-child { border-right: none; }
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--c2);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── TIMELINE ── */
+  .timeline-section {
+    margin-bottom: 40px;
+    animation: fadeUp 0.5s 0.15s ease both;
+  }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .timeline-start {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .timeline-start input[type="date"] {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    padding: 5px 10px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .timeline-start input[type="date"]:focus {
+    border-color: var(--c2);
+  }
+
+  .timeline-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 4px;
+  }
+
+  .tl-week {
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    transition: transform 0.15s;
+  }
+
+  .tl-week:hover { transform: translateY(-2px); }
+
+  .tl-week.current {
+    border-color: #fff;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.15);
+  }
+
+  .tl-week-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 8px 8px 4px;
+    color: var(--muted);
+  }
+
+  .tl-week.current .tl-week-num { color: #fff; }
+
+  .tl-course-bar {
+    height: 4px;
+    margin: 0 8px 6px;
+    border-radius: 2px;
+  }
+
+  .tl-modules {
+    padding: 0 8px 8px;
+    font-size: 9px;
+    color: var(--muted);
+    line-height: 1.5;
+    letter-spacing: 0.3px;
+  }
+
+  .tl-date {
+    font-size: 9px;
+    color: var(--muted);
+    padding: 0 8px 6px;
+    opacity: 0.7;
+  }
+
+  /* ── PROGRESS OVERVIEW ── */
+  .progress-overview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 40px;
+    animation: fadeUp 0.5s 0.2s ease both;
+  }
+
+  .ov-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px;
+    transition: border-color 0.2s;
+  }
+
+  .ov-card:hover { border-color: rgba(255,255,255,0.15); }
+
+  .ov-course {
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+
+  .ov-pct {
+    font-family: 'Syne', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 10px;
+    color: #fff;
+  }
+
+  .ov-bar-bg {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .ov-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+    width: 0%;
+  }
+
+  .ov-counts {
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  /* ── COURSE SECTION ── */
+  .course-section {
+    margin-bottom: 32px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .course-section:nth-child(1) { animation-delay: 0.25s; }
+  .course-section:nth-child(2) { animation-delay: 0.30s; }
+  .course-section:nth-child(3) { animation-delay: 0.35s; }
+
+  .course-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 22px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+  }
+
+  .course-header:hover { background: var(--surface2); }
+
+  .course-icon {
+    width: 36px; height: 36px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  .course-info { flex: 1; }
+
+  .course-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+  }
+
+  .course-sub {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 3px;
+    letter-spacing: 1px;
+  }
+
+  .course-weeks-badge {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .course-toggle {
+    font-size: 16px;
+    color: var(--muted);
+    transition: transform 0.3s;
+    flex-shrink: 0;
+  }
+
+  .course-body {
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.35s ease;
+  }
+
+  .course-body.collapsed { grid-template-rows: 0fr; }
+  .course-body-inner { overflow: hidden; }
+
+  /* ── MODULE ── */
+  .module-list { padding: 8px; }
+
+  .module {
+    margin-bottom: 4px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  .module-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+
+  .module-header:hover { background: var(--surface2); }
+
+  .module-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--muted);
+    width: 24px;
+    flex-shrink: 0;
+  }
+
+  .module-title {
+    flex: 1;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #ddd;
+    line-height: 1.3;
+    transition: color 0.2s;
+  }
+
+  .module-header:hover .module-title { color: #fff; }
+
+  .module.all-done .module-title {
+    color: var(--muted);
+    text-decoration: line-through;
+  }
+
+  .module-week {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .module-count {
+    font-size: 10px;
+    color: var(--muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: 36px;
+    text-align: right;
+  }
+
+  .module-chevron {
+    font-size: 12px;
+    color: var(--muted);
+    transition: transform 0.25s;
+    flex-shrink: 0;
+  }
+
+  .module-body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.25s ease;
+    border-top: 0px solid var(--border);
+  }
+
+  .module-body.open {
+    grid-template-rows: 1fr;
+    border-top-width: 1px;
+  }
+
+  .module-body-inner { overflow: hidden; }
+
+  .section-list {
+    list-style: none;
+    padding: 8px 12px;
+  }
+
+  .section-list li {
+    font-size: 11.5px;
+    color: #a0a0b8;
+    padding: 5px 0 5px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: color 0.15s;
+    border-radius: 3px;
+    position: relative;
+  }
+
+  .section-list li::before {
+    content: '—';
+    color: var(--border);
+    flex-shrink: 0;
+    font-size: 9px;
+    position: absolute;
+    left: 4px;
+    top: 6px;
+    transition: color 0.15s;
+  }
+
+  .section-list li:hover { color: #fff; }
+  .section-list li:hover::before { color: var(--c2); }
+
+  .section-list li.done {
+    color: var(--muted);
+    text-decoration: line-through;
+  }
+
+  .section-list li.done::before {
+    content: '✓';
+    color: var(--c3);
+  }
+
+  /* Course accent overrides */
+  .c1-accent .section-list li:hover::before { color: var(--c1); }
+  .c2-accent .section-list li:hover::before { color: var(--c2); }
+  .c3-accent .section-list li:hover::before { color: var(--c3); }
+
+  /* ── NAV BUTTONS ── */
+  .nav-section {
+    text-align: center;
+    margin-top: 48px;
+    animation: fadeUp 0.5s 0.5s ease both;
+  }
+
+  .nav-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .nav-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #fff;
+    letter-spacing: -0.3px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .nav-btn:hover { background: var(--surface2); }
+
+  .nav-btn-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+
+  /* Reset button */
+  .reset-btn {
+    display: block;
+    margin: 20px auto 0;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 7px 18px;
+    border-radius: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .reset-btn:hover { border-color: #ef4444; color: #ef4444; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 700px) {
+    .timeline-grid { grid-template-columns: repeat(5, 1fr); }
+    .progress-overview { grid-template-columns: 1fr; }
+    .stats-bar { flex-wrap: wrap; }
+    .stat { min-width: 50%; }
+  }
+
+  @media (max-width: 480px) {
+    .timeline-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <a href="index.html" class="home-link">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Home
+  </a>
+
+  <div class="header">
+    <div class="header-tag">Andela · Cloud Native Track</div>
+    <h1>Kubernetes &amp;<br><span>Cloud Native</span></h1>
+    <p class="header-desc">3-course bundle from The Linux Foundation. Track your progress module-by-module across all three courses and stay on schedule with the 10-week completion plan.</p>
+  </div>
+
+  <div class="stats-bar" id="statsBar">
+    <div class="stat">
+      <div class="stat-num" id="statCourses">3</div>
+      <div class="stat-label">Courses</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">10</div>
+      <div class="stat-label">Weeks</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="statModules">46</div>
+      <div class="stat-label">Modules</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="statSections">—</div>
+      <div class="stat-label">Sections</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="statDone">0%</div>
+      <div class="stat-label">Overall Done</div>
+    </div>
+  </div>
+
+  <!-- 10-week timeline -->
+  <div class="timeline-section">
+    <div class="section-label">10-Week Schedule</div>
+    <div class="timeline-start">
+      <span>Start date:</span>
+      <input type="date" id="startDate">
+      <span id="currentWeekLabel" style="color:var(--c2)"></span>
+    </div>
+    <div class="timeline-grid" id="timelineGrid"></div>
+  </div>
+
+  <!-- Progress overview -->
+  <div class="section-label" style="margin-bottom:16px; animation: fadeUp 0.5s 0.18s ease both;">Course Progress</div>
+  <div class="progress-overview" id="progressOverview"></div>
+
+  <!-- Course sections rendered here -->
+  <div id="courseSections"></div>
+
+  <div class="nav-section">
+    <div class="nav-label">Other Roadmaps</div>
+    <div class="nav-buttons">
+      <a href="java-learning-plan.html" class="nav-btn" onmouseover="this.style.borderColor='var(--c1)'" onmouseout="this.style.borderColor='var(--border)'">
+        <span class="nav-btn-label" style="color:var(--c1)">← Go</span>
+        Java &amp; Spring Boot
+      </a>
+      <a href="backend-devops-learning-plan.html" class="nav-btn" onmouseover="this.style.borderColor='var(--c2)'" onmouseout="this.style.borderColor='var(--border)'">
+        <span class="nav-btn-label" style="color:var(--c2)">← Go</span>
+        Backend &amp; DevOps
+      </a>
+      <a href="ai-engineering-learning-plan.html" class="nav-btn" onmouseover="this.style.borderColor='#8b5cf6'" onmouseout="this.style.borderColor='var(--border)'">
+        <span class="nav-btn-label" style="color:#8b5cf6">← Go</span>
+        AI Engineering
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── COURSE DATA ─────────────────────────────────────────────────────────────
+
+const COURSES = [
+  {
+    id: 'linux',
+    title: 'Introduction to Linux',
+    subtitle: 'LFS101 · Linux Foundation',
+    color: '#f97316',
+    cssVar: 'c1',
+    weekRange: 'Weeks 1–4',
+    modules: [
+      { num:'01', title:'Course Introduction', week:1, sections:['Course Information'] },
+      { num:'02', title:'The Linux Foundation', week:1, sections:['Introduction','The Linux Foundation','Linux Foundation Events','Linux Foundation Education','Course Linux Requirements','Knowledge Check','Summary'] },
+      { num:'03', title:'Linux Philosophy and Concepts', week:1, sections:['Introduction','Linux History','Linux Philosophy','Linux Community','Linux Terminology','Linux Distributions','Knowledge Check','Summary'] },
+      { num:'04', title:'Linux Basics and System Startup', week:1, sections:['Introduction','The Boot Process','Kernel, init and Services','Linux Filesystem Basics','Linux Distribution Installation','Knowledge Check','Summary'] },
+      { num:'05', title:'Graphical Interface', week:1, sections:['Introduction','Graphical Desktop','Session Management','Basic Operations','Knowledge Check','Summary'] },
+      { num:'06', title:'System Configuration from the Graphical Interface', week:2, sections:['Introduction','System, Display, Date and Time Settings','Network Manager','Installing and Updating Software','Knowledge Check','Summary'] },
+      { num:'07', title:'Common Applications', week:2, sections:['Introduction','Internet Applications','Productivity and Development Applications','Multimedia Applications','Graphics Editors and Utilities','Knowledge Check','Summary'] },
+      { num:'08', title:'Command Line Operations', week:2, sections:['Introduction','Command-Line Mode Options','Basic Operations','Working with Files','Searching for Files','Installing Software','Knowledge Check','Summary'] },
+      { num:'09', title:'Finding Linux Documentation', week:2, sections:['Introduction','Documentation Sources','The man pages','GNU Info','The --help Option and help Command','Other Documentation Sources','Knowledge Check','Summary'] },
+      { num:'10', title:'Processes', week:2, sections:['Introduction','Introduction to Processes and Process Attributes','Process Metrics and Process Control','Listing Processes: ps and top','Starting Processes in the Future','Knowledge Check','Summary'] },
+      { num:'11', title:'File Operations', week:3, sections:['Introduction','Filesystems','Filesystem Layout','Comparing Files and File Types','Backing Up and Compressing Data','Knowledge Check','Summary'] },
+      { num:'12', title:'Text Editors', week:3, sections:['Introduction','Basic Editors: nano and gedit','More Advanced Editors: vi and emacs','Knowledge Check','Summary'] },
+      { num:'13', title:'User Environment', week:3, sections:['Introduction','Accounts, Users and Groups','Environment Variables','Recalling Previous Commands','File Permissions','Knowledge Check','Summary'] },
+      { num:'14', title:'Manipulating Text', week:3, sections:['Introduction','cat and echo','Working with Large and Compressed Files','sed and awk','File Manipulation Utilities','grep and strings','Miscellaneous Text Utilities','Knowledge Check','Summary'] },
+      { num:'15', title:'Network Operations', week:3, sections:['Introduction','Network Addresses and DNS','Networking Configuration and Tools','Browsers, wget and curl','Transferring Files','Knowledge Check','Summary'] },
+      { num:'16', title:'The Bash Shell and Basic Scripting', week:4, sections:['Introduction','Features and Capabilities','Syntax','Constructs','Knowledge Check','Summary'] },
+      { num:'17', title:'More on Bash Shell Scripting', week:4, sections:['Introduction','String Manipulation','The case Statement','Looping Constructs','Script Debugging','Some Additional Useful Techniques','Knowledge Check','Summary'] },
+      { num:'18', title:'Printing', week:4, sections:['Introduction','Configuration','Printing Operations','Manipulating Postscript and PDF Files','Knowledge Check','Summary'] },
+      { num:'19', title:'Local Security Principles', week:4, sections:['Introduction','Understanding Linux Security','When Are root Privileges Required?','sudo, Process Isolation, Limiting Hardware Access and Keeping Systems Current','Working with Passwords','Securing the Boot Process and Hardware Resources','Knowledge Check','Summary'] },
+      { num:'20', title:'Course Completion', week:4, sections:['Feedback','Final Exam'] }
+    ]
+  },
+  {
+    id: 'k8s',
+    title: 'Introduction to Kubernetes',
+    subtitle: 'LFS158 · Linux Foundation',
+    color: '#3b82f6',
+    cssVar: 'c2',
+    weekRange: 'Weeks 5–8',
+    modules: [
+      { num:'01', title:'Course Introduction', week:5, sections:['Course Information','The Linux Foundation'] },
+      { num:'02', title:'From Monolith to Microservices', week:5, sections:['Introduction','Chapter Overview','Learning Objectives','From Monolith to Microservices','Knowledge Check'] },
+      { num:'03', title:'Container Orchestration', week:5, sections:['Introduction','Container Orchestration','Knowledge Check'] },
+      { num:'04', title:'Kubernetes', week:5, sections:['Introduction','Kubernetes','Knowledge Check'] },
+      { num:'05', title:'Kubernetes Architecture', week:5, sections:['Introduction','Kubernetes Architecture','Knowledge Check'] },
+      { num:'06', title:'Installing Kubernetes', week:6, sections:['Introduction','Installing Kubernetes','Knowledge Check'] },
+      { num:'07', title:'Minikube: Installing Local Kubernetes Clusters', week:6, sections:['Introduction','Minikube: Installing Local Kubernetes Clusters','Knowledge Check'] },
+      { num:'08', title:'Accessing Minikube', week:6, sections:['Introduction','Accessing Minikube','Knowledge Check'] },
+      { num:'09', title:'Kubernetes Building Blocks', week:6, sections:['Introduction','Kubernetes Building Blocks','Knowledge Check'] },
+      { num:'10', title:'Authentication, Authorization, Admission Control', week:7, sections:['Introduction','Authentication, Authorization, Admission Control','Knowledge Check'] },
+      { num:'11', title:'Services', week:7, sections:['Introduction','Services','Knowledge Check'] },
+      { num:'12', title:'Deploying a Standalone Application', week:7, sections:['Introduction','Deploying a Standalone Application','Knowledge Check'] },
+      { num:'13', title:'Kubernetes Volume Management', week:7, sections:['Introduction','Kubernetes Volume Management','Knowledge Check'] },
+      { num:'14', title:'ConfigMaps and Secrets', week:8, sections:['Introduction','ConfigMaps and Secrets','Knowledge Check'] },
+      { num:'15', title:'Ingress', week:8, sections:['Introduction','Ingress','Knowledge Check'] },
+      { num:'16', title:'Advanced Topics', week:8, sections:['Introduction','Advanced Topics','Knowledge Check'] },
+      { num:'17', title:'Kubernetes Community', week:8, sections:['Introduction','Kubernetes Community','Next Steps?'] },
+      { num:'18', title:'Course Completion', week:8, sections:['Feedback','Final Exam'] }
+    ]
+  },
+  {
+    id: 'kcne',
+    title: 'Kubernetes and Cloud Native Essentials',
+    subtitle: 'KCNE · Linux Foundation',
+    color: '#10b981',
+    cssVar: 'c3',
+    weekRange: 'Weeks 9–10',
+    modules: [
+      { num:'01', title:'Course Introduction', week:9, sections:['Course Information','The Linux Foundation'] },
+      { num:'02', title:'Cloud Native Architecture', week:9, sections:['Introduction','Chapter Overview','Learning Objectives','Understanding the Cloud Native Architecture','Knowledge Check'] },
+      { num:'03', title:'Container Orchestration', week:9, sections:['Introduction','Container Orchestration','Knowledge Check'] },
+      { num:'04', title:'Kubernetes Fundamentals', week:9, sections:['Introduction','Kubernetes Fundamentals','Knowledge Check'] },
+      { num:'05', title:'Working with Kubernetes', week:10, sections:['Introduction','Working with Kubernetes','Knowledge Check'] },
+      { num:'06', title:'Cloud Native Application Delivery', week:10, sections:['Introduction','Cloud Native Application Delivery','Knowledge Check'] },
+      { num:'07', title:'Cloud Native Observability', week:10, sections:['Introduction','Cloud Native Observability','Knowledge Check'] },
+      { num:'08', title:'Course Completion', week:10, sections:['Feedback','Final Exam'] }
+    ]
+  }
+];
+
+// ── TIMELINE DATA ────────────────────────────────────────────────────────────
+
+const WEEKS = [
+  { n:1,  course:'linux', label:'Linux 01–05', desc:'Course Intro → Graphical UI' },
+  { n:2,  course:'linux', label:'Linux 06–10', desc:'Config → Processes' },
+  { n:3,  course:'linux', label:'Linux 11–15', desc:'Files → Networking' },
+  { n:4,  course:'linux', label:'Linux 16–20', desc:'Bash → Final Exam' },
+  { n:5,  course:'k8s',   label:'K8s 01–05',  desc:'Intro → Architecture' },
+  { n:6,  course:'k8s',   label:'K8s 06–09',  desc:'Install → Building Blocks' },
+  { n:7,  course:'k8s',   label:'K8s 10–13',  desc:'Auth → Volumes' },
+  { n:8,  course:'k8s',   label:'K8s 14–18',  desc:'Secrets → Final Exam' },
+  { n:9,  course:'kcne',  label:'KCNE 01–04', desc:'Intro → K8s Fundamentals' },
+  { n:10, course:'kcne',  label:'KCNE 05–08', desc:'Working K8s → Final Exam' },
+];
+
+const COURSE_COLORS = { linux: '#f97316', k8s: '#3b82f6', kcne: '#10b981' };
+
+// ── STORAGE KEY ──────────────────────────────────────────────────────────────
+const STORAGE_KEY = 'k8s-cloud-native-tracker-v1';
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+let state = { done: {}, startDate: null };
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function loadState() {
+  try {
+    const s = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    state.done = s.done || {};
+    state.startDate = s.startDate || null;
+  } catch(e) { state = { done: {}, startDate: null }; }
+}
+
+function sectionKey(courseId, modNum, section) {
+  return `${courseId}::${modNum}::${section.trim().toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'').slice(0,60)}`;
+}
+
+// ── RENDER TIMELINE ──────────────────────────────────────────────────────────
+function renderTimeline() {
+  const grid = document.getElementById('timelineGrid');
+  grid.innerHTML = '';
+  const currentWeek = getCurrentWeek();
+
+  WEEKS.forEach(w => {
+    const color = COURSE_COLORS[w.course];
+    const isCurrent = w.n === currentWeek;
+    const div = document.createElement('div');
+    div.className = 'tl-week' + (isCurrent ? ' current' : '');
+    div.style.borderColor = isCurrent ? color : '';
+
+    let dateStr = '';
+    if (state.startDate) {
+      const start = new Date(state.startDate);
+      const weekStart = new Date(start);
+      weekStart.setDate(start.getDate() + (w.n - 1) * 7);
+      dateStr = weekStart.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+    }
+
+    div.innerHTML = `
+      <div class="tl-week-num" style="${isCurrent ? 'color:'+color : ''}">Wk ${w.n}${isCurrent ? ' ◉' : ''}</div>
+      <div class="tl-course-bar" style="background:${color}; opacity:${isCurrent?1:0.5}"></div>
+      <div class="tl-modules" style="color:${isCurrent?color:''}; font-weight:${isCurrent?600:400}">${w.label}</div>
+      <div class="tl-date">${dateStr || w.desc}</div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+function getCurrentWeek() {
+  if (!state.startDate) return null;
+  const start = new Date(state.startDate);
+  const now = new Date();
+  const diffMs = now - start;
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const week = Math.floor(diffDays / 7) + 1;
+  return (week >= 1 && week <= 10) ? week : null;
+}
+
+// ── RENDER PROGRESS OVERVIEW ─────────────────────────────────────────────────
+function renderProgressOverview() {
+  const container = document.getElementById('progressOverview');
+  container.innerHTML = '';
+
+  COURSES.forEach(course => {
+    const { total, done } = getCourseStats(course);
+    const pct = total ? Math.round((done / total) * 100) : 0;
+
+    const card = document.createElement('div');
+    card.className = 'ov-card';
+    card.style.borderTopColor = course.color;
+    card.style.borderTopWidth = '3px';
+    card.style.borderTopStyle = 'solid';
+    card.innerHTML = `
+      <div class="ov-course">${course.title}</div>
+      <div class="ov-pct" id="ov-pct-${course.id}" style="color:${course.color}">${pct}%</div>
+      <div class="ov-bar-bg">
+        <div class="ov-bar-fill" id="ov-bar-${course.id}" style="background:${course.color}; width:${pct}%"></div>
+      </div>
+      <div class="ov-counts" id="ov-counts-${course.id}">${done} of ${total} sections complete</div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function getCourseStats(course) {
+  let total = 0, done = 0;
+  course.modules.forEach(mod => {
+    mod.sections.forEach(sec => {
+      total++;
+      if (state.done[sectionKey(course.id, mod.num, sec)]) done++;
+    });
+  });
+  return { total, done };
+}
+
+// ── RENDER COURSE SECTIONS ───────────────────────────────────────────────────
+function renderCourseSections() {
+  const container = document.getElementById('courseSections');
+  container.innerHTML = '';
+
+  COURSES.forEach((course, ci) => {
+    const section = document.createElement('div');
+    section.className = 'course-section';
+    section.id = `sec-${course.id}`;
+
+    section.innerHTML = `
+      <div class="course-header" onclick="toggleCourse('${course.id}')" style="border-top:3px solid ${course.color}">
+        <div class="course-icon" style="background:${course.color}22; color:${course.color}">${ci+1}</div>
+        <div class="course-info">
+          <div class="course-title">${course.title}</div>
+          <div class="course-sub">${course.subtitle} · ${course.modules.length} modules</div>
+        </div>
+        <div class="course-weeks-badge">${course.weekRange}</div>
+        <div class="course-toggle" id="ctoggle-${course.id}">▾</div>
+      </div>
+      <div class="course-body" id="cbody-${course.id}">
+        <div class="course-body-inner">
+          <div class="module-list ${course.cssVar}-accent" id="mlist-${course.id}"></div>
+        </div>
+      </div>
+    `;
+
+    container.appendChild(section);
+
+    // Render modules
+    const mlist = document.getElementById(`mlist-${course.id}`);
+    course.modules.forEach(mod => {
+      const modEl = document.createElement('div');
+      modEl.className = 'module';
+      modEl.id = `mod-${course.id}-${mod.num}`;
+
+      const doneSections = mod.sections.filter(s => state.done[sectionKey(course.id, mod.num, s)]).length;
+      const isAllDone = doneSections === mod.sections.length;
+
+      modEl.innerHTML = `
+        <div class="module-header" onclick="toggleModule(this, '${course.id}', '${mod.num}')">
+          <span class="module-num">${mod.num}</span>
+          <span class="module-title">${mod.title}</span>
+          <span class="module-week" style="background:${course.color}18; color:${course.color}">Wk ${mod.week}</span>
+          <span class="module-count" id="mc-${course.id}-${mod.num}">${doneSections}/${mod.sections.length}</span>
+          <span class="module-chevron" id="mchev-${course.id}-${mod.num}">▾</span>
+        </div>
+        <div class="module-body" id="mbody-${course.id}-${mod.num}">
+          <div class="module-body-inner">
+            <ul class="section-list">
+              ${mod.sections.map(sec => {
+                const key = sectionKey(course.id, mod.num, sec);
+                const isDone = state.done[key] ? ' done' : '';
+                return `<li class="${isDone}" data-key="${key}" data-course="${course.id}" onclick="toggleSection(this)">${sec}</li>`;
+              }).join('')}
+            </ul>
+          </div>
+        </div>
+      `;
+
+      if (isAllDone) modEl.classList.add('all-done');
+      mlist.appendChild(modEl);
+    });
+  });
+}
+
+// ── TOGGLE HANDLERS ──────────────────────────────────────────────────────────
+function toggleCourse(courseId) {
+  const body = document.getElementById(`cbody-${courseId}`);
+  const toggle = document.getElementById(`ctoggle-${courseId}`);
+  const collapsed = body.classList.toggle('collapsed');
+  toggle.style.transform = collapsed ? 'rotate(-90deg)' : 'rotate(0deg)';
+}
+
+function toggleModule(header, courseId, modNum) {
+  const body = document.getElementById(`mbody-${courseId}-${modNum}`);
+  const chev = document.getElementById(`mchev-${courseId}-${modNum}`);
+  const isOpen = body.classList.toggle('open');
+  chev.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+}
+
+function toggleSection(li) {
+  const key = li.dataset.key;
+  const courseId = li.dataset.course;
+  li.classList.toggle('done');
+  state.done[key] = li.classList.contains('done');
+  saveState();
+  updateCourseStats(courseId);
+  updateOverallStats();
+}
+
+// ── UPDATE STATS ─────────────────────────────────────────────────────────────
+function updateCourseStats(courseId) {
+  const course = COURSES.find(c => c.id === courseId);
+  if (!course) return;
+
+  course.modules.forEach(mod => {
+    const total = mod.sections.length;
+    const done = mod.sections.filter(s => state.done[sectionKey(courseId, mod.num, s)]).length;
+    const el = document.getElementById(`mc-${courseId}-${mod.num}`);
+    if (el) el.textContent = `${done}/${total}`;
+    const modEl = document.getElementById(`mod-${courseId}-${mod.num}`);
+    if (modEl) modEl.classList.toggle('all-done', done === total);
+  });
+
+  const { total, done } = getCourseStats(course);
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  const pctEl = document.getElementById(`ov-pct-${courseId}`);
+  const barEl = document.getElementById(`ov-bar-${courseId}`);
+  const countEl = document.getElementById(`ov-counts-${courseId}`);
+  if (pctEl) pctEl.textContent = `${pct}%`;
+  if (barEl) barEl.style.width = `${pct}%`;
+  if (countEl) countEl.textContent = `${done} of ${total} sections complete`;
+}
+
+function updateOverallStats() {
+  let totalSections = 0, doneSections = 0;
+  COURSES.forEach(course => {
+    const s = getCourseStats(course);
+    totalSections += s.total;
+    doneSections += s.done;
+  });
+  const pct = totalSections ? Math.round((doneSections / totalSections) * 100) : 0;
+  const el = document.getElementById('statDone');
+  if (el) el.textContent = `${pct}%`;
+  const secEl = document.getElementById('statSections');
+  if (secEl) secEl.textContent = totalSections;
+}
+
+// ── RESET ─────────────────────────────────────────────────────────────────────
+function resetAll() {
+  if (!confirm('Reset ALL progress across all three courses? This cannot be undone.')) return;
+  state.done = {};
+  saveState();
+  document.querySelectorAll('.section-list li.done').forEach(li => li.classList.remove('done'));
+  document.querySelectorAll('.module.all-done').forEach(m => m.classList.remove('all-done'));
+  COURSES.forEach(c => updateCourseStats(c.id));
+  updateOverallStats();
+}
+
+// ── START DATE ───────────────────────────────────────────────────────────────
+function initStartDate() {
+  const input = document.getElementById('startDate');
+  if (state.startDate) input.value = state.startDate;
+  input.addEventListener('change', () => {
+    state.startDate = input.value;
+    saveState();
+    renderTimeline();
+    updateCurrentWeekLabel();
+  });
+  updateCurrentWeekLabel();
+}
+
+function updateCurrentWeekLabel() {
+  const label = document.getElementById('currentWeekLabel');
+  const week = getCurrentWeek();
+  label.textContent = week ? `You are on Week ${week}` : '';
+}
+
+// ── RESET BUTTON ──────────────────────────────────────────────────────────────
+function addResetButton() {
+  const btn = document.createElement('button');
+  btn.className = 'reset-btn';
+  btn.textContent = 'Reset All Progress';
+  btn.onclick = resetAll;
+  document.querySelector('.nav-section').insertAdjacentElement('beforebegin', btn);
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  loadState();
+  renderTimeline();
+  renderProgressOverview();
+  renderCourseSections();
+  initStartDate();
+  addResetButton();
+  COURSES.forEach(c => updateCourseStats(c.id));
+  updateOverallStats();
+
+  // Compute total sections for stats
+  let totalSec = 0;
+  COURSES.forEach(c => c.modules.forEach(m => totalSec += m.sections.length));
+  document.getElementById('statSections').textContent = totalSec;
+});
+</script>
+</body>
+</html>
