@@ -6,6 +6,9 @@
 <title>AI Engineering — Learning Roadmap</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <style>
   :root {
     --bg: #0a0a0f;
@@ -53,7 +56,7 @@
     z-index: 1;
   }
 
-  /* Home link */
+  /* Home Link */
   .home-link {
     display: inline-flex;
     align-items: center;
@@ -62,17 +65,22 @@
     text-decoration: none;
     font-size: 12px;
     letter-spacing: 1px;
+    text-transform: uppercase;
     margin-bottom: 24px;
-    transition: color 0.2s;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    transition: all 0.2s ease;
     animation: fadeUp 0.4s ease both;
   }
-  .home-link:hover { color: var(--accent4); }
+  .home-link:hover {
+    color: var(--accent4);
+    border-color: var(--accent4);
+    background: rgba(139, 92, 246, 0.08);
+  }
   .home-link svg {
     width: 16px;
     height: 16px;
-    stroke: currentColor;
-    stroke-width: 2;
-    fill: none;
   }
 
   .header {
@@ -467,20 +475,45 @@
     .stat { border-right: none; border-bottom: 1px solid var(--border); }
     .stat:last-child { border-bottom: none; }
   }
+
+  /* ── AUTH BAR ── */
+  .auth-bar { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:flex-end; padding:10px 20px; gap:10px; background:rgba(10,10,15,0.85); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); font-family:'IBM Plex Mono',monospace; }
+  .auth-user { display:flex; align-items:center; gap:8px; font-size:11px; color:var(--muted); }
+  .auth-avatar { width:24px; height:24px; border-radius:50%; border:1px solid var(--border); object-fit:cover; }
+  .auth-avatar-placeholder { width:24px; height:24px; border-radius:50%; background:var(--surface2); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--muted); }
+  .auth-btn { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; padding:5px 12px; border-radius:4px; cursor:pointer; transition:all 0.2s; border:1px solid; background:none; }
+  .auth-btn.sign-in { color:var(--accent3); border-color:rgba(16,185,129,0.4); }
+  .auth-btn.sign-in:hover { background:rgba(16,185,129,0.08); border-color:var(--accent3); }
+  .auth-btn.sign-out { color:var(--muted); border-color:var(--border); }
+  .auth-btn.sign-out:hover { color:#ef4444; border-color:rgba(239,68,68,0.4); }
+  .auth-locked-msg { font-size:10px; color:var(--muted); letter-spacing:1px; }
+  body { padding-top:48px; }
 </style>
 </head>
 <body>
+<div class="auth-bar" id="authBar">
+  <span class="auth-locked-msg" id="authMsg"></span>
+  <div class="auth-user" id="authUser" style="display:none">
+    <div class="auth-avatar-placeholder" id="authAvatarWrap">👤</div>
+    <span id="authEmail"></span>
+  </div>
+  <button class="auth-btn sign-in" id="signInBtn" onclick="signIn()" style="display:none">Sign in with Google</button>
+  <button class="auth-btn sign-out" id="signOutBtn" onclick="signOut()" style="display:none">Sign out</button>
+</div>
 <div class="container">
 
   <a href="index.html" class="home-link">
-    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    Home
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+    </svg>
+    All Roadmaps
   </a>
 
   <div class="header">
     <div class="header-tag">Learning Roadmap</div>
     <h1>AI <span>Engineering</span><br>Mastery</h1>
     <p class="header-desc">A complete roadmap from Python and math foundations to building production-grade AI systems — covering machine learning, deep learning, LLMs, RAG, agents, MLOps, and AI system design.</p>
+    <div id="syncStatus" style="display:inline-block; margin-top:14px; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); border:1px solid var(--border); border-radius:4px; padding:3px 10px; font-family:'IBM Plex Mono',monospace; transition: color 0.3s, border-color 0.3s;">⟳ Connecting…</div>
   </div>
 
   <div class="stats-bar">
@@ -917,70 +950,141 @@
         <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--accent2); font-weight:400;">← Back</span>
         Backend &amp; DevOps
       </a>
+      <a href="kubernetes-course-tracker.html"
+        style="display:inline-flex; align-items:center; gap:12px; padding:14px 28px; background:var(--surface); border:1px solid var(--border); border-radius:8px; text-decoration:none; font-family:'Syne',sans-serif; font-weight:700; font-size:15px; color:#fff; letter-spacing:-0.3px; transition:border-color 0.2s, background 0.2s;"
+        onmouseover="this.style.borderColor='var(--accent2)'; this.style.background='var(--surface2)'"
+        onmouseout="this.style.borderColor='var(--border)'; this.style.background='var(--surface)'">
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--accent2); font-weight:400;">Jump →</span>
+        Kubernetes Tracker
+      </a>
     </div>
   </div>
 
 </div>
 
 <script>
-  const STORAGE_KEY = 'ai-engineering-roadmap-v1';
+  // ── FIREBASE CONFIG ────────────────────────────────────────────────────────
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyBtjtB0xFY9rlrP63XxNMUprHpYqoI-mBs",
+    authDomain: "tech-learning-tracker.firebaseapp.com",
+    databaseURL: "https://tech-learning-tracker-default-rtdb.firebaseio.com",
+    projectId: "tech-learning-tracker",
+    storageBucket: "tech-learning-tracker.firebasestorage.app",
+    messagingSenderId: "379085642193",
+    appId: "1:379085642193:web:515f03bc0025fe14fea8f0"
+  };
+  const PAGE_KEY = 'ai';
+  // ───────────────────────────────────────────────────────────────────────────
 
-  function getItemId(li) {
-    return 'topic:' + li.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+  const STORAGE_KEY = 'ai-engineering-roadmap-v1';
+  let db = null, auth = null, currentUser = null, dbListener = null;
+
+  function updateAuthUI(user) {
+    const signInBtn = document.getElementById('signInBtn');
+    const signOutBtn = document.getElementById('signOutBtn');
+    const authUser = document.getElementById('authUser');
+    const authEmail = document.getElementById('authEmail');
+    const authMsg = document.getElementById('authMsg');
+    const avatarWrap = document.getElementById('authAvatarWrap');
+    if (user) {
+      signInBtn.style.display = 'none'; signOutBtn.style.display = 'inline-block';
+      authUser.style.display = 'flex'; authEmail.textContent = user.email; authMsg.textContent = '';
+      if (user.photoURL) avatarWrap.innerHTML = `<img class="auth-avatar" src="${user.photoURL}" alt="">`;
+    } else {
+      signInBtn.style.display = 'inline-block'; signOutBtn.style.display = 'none';
+      authUser.style.display = 'none'; authMsg.textContent = 'Sign in to sync progress across devices';
+    }
+  }
+
+  function signIn() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => console.warn(e)); }
+  function signOut() {
+    if (!confirm('Sign out? Progress is saved in Firebase.')) return;
+    if (dbListener && currentUser) { db.ref(`progress/${currentUser.uid}/${PAGE_KEY}`).off('value', dbListener); dbListener = null; }
+    auth.signOut();
+  }
+
+  function setSyncStatus(status) {
+    const el = document.getElementById('syncStatus');
+    if (!el) return;
+    const map = { syncing:['⟳ Syncing…','var(--muted)','var(--border)'], synced:['✓ Synced','#10b981','rgba(16,185,129,0.3)'], offline:['⚡ Local','var(--accent)','rgba(249,115,22,0.3)'], error:['✕ Error','#ef4444','rgba(239,68,68,0.3)'] };
+    const [text, color, border] = map[status] || map.offline;
+    el.textContent = text; el.style.color = color; el.style.borderColor = border;
+  }
+
+  function initFirebase() {
+    if (FIREBASE_CONFIG.apiKey.startsWith('PASTE')) { setSyncStatus('offline'); document.getElementById('signInBtn').style.display='none'; document.getElementById('authMsg').textContent='⚠ Firebase not configured'; return; }
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.database(); auth = firebase.auth();
+    auth.onAuthStateChanged(user => {
+      currentUser = user; updateAuthUI(user);
+      if (user) { attachListener(user.uid); }
+      else { if (dbListener) { db.ref(`progress/${currentUser?.uid}/${PAGE_KEY}`).off(); dbListener = null; } setSyncStatus('offline'); loadFromCache(); }
+    });
+  }
+
+  function attachListener(uid) {
+    setSyncStatus('syncing');
+    dbListener = db.ref(`progress/${uid}/${PAGE_KEY}`).on('value', snap => {
+      const data = snap.val();
+      if (data) { applyData(data); }
+      setSyncStatus('synced');
+    }, () => setSyncStatus('offline'));
+  }
+
+  function getItemId(li) { return 'topic:' + li.textContent.trim().toLowerCase().replace(/\s+/g, '-'); }
+
+  function applyData(data) {
+    if (data && Array.isArray(data.done)) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data.done));
+      const s = new Set(data.done);
+      document.querySelectorAll('.topic-list li').forEach(li => li.classList.toggle('done', s.has(getItemId(li))));
+      updateProgress();
+    }
+  }
+
+  function loadFromCache() {
+    try { applyData({ done: JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') }); } catch(e) {}
   }
 
   function saveProgress() {
     const done = [];
     document.querySelectorAll('.topic-list li.done').forEach(li => done.push(getItemId(li)));
     localStorage.setItem(STORAGE_KEY, JSON.stringify(done));
-  }
-
-  function loadProgress() {
-    try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-      const savedSet = new Set(saved);
-      document.querySelectorAll('.topic-list li').forEach(li => {
-        if (savedSet.has(getItemId(li))) li.classList.add('done');
-      });
-    } catch (e) { console.warn('Progress load error:', e); }
+    if (db && currentUser) {
+      setSyncStatus('syncing');
+      db.ref(`progress/${currentUser.uid}/${PAGE_KEY}`).set({ done, updatedAt: Date.now() })
+        .then(() => setSyncStatus('synced')).catch(() => setSyncStatus('error'));
+    }
   }
 
   function resetProgress() {
     if (!confirm('Reset all progress? This cannot be undone.')) return;
     localStorage.removeItem(STORAGE_KEY);
     document.querySelectorAll('.topic-list li.done').forEach(li => li.classList.remove('done'));
+    if (db && currentUser) db.ref(`progress/${currentUser.uid}/${PAGE_KEY}`).set({ done: [], updatedAt: Date.now() });
     updateProgress();
   }
 
   function togglePhase(header) {
-    const body = header.nextElementSibling;
-    const toggle = header.querySelector('.phase-toggle');
+    const body = header.nextElementSibling; const toggle = header.querySelector('.phase-toggle');
     const collapsed = body.classList.toggle('collapsed');
     toggle.style.transform = collapsed ? 'rotate(-90deg)' : 'rotate(0deg)';
   }
 
-  function toggleDone(li) {
-    li.classList.toggle('done');
-    saveProgress();
-    updateProgress();
-  }
+  function toggleDone(li) { li.classList.toggle('done'); saveProgress(); updateProgress(); }
 
   function updateProgress() {
     document.querySelectorAll('.phase').forEach((phase, i) => {
       const all = phase.querySelectorAll('.topic-list li');
       const done = phase.querySelectorAll('.topic-list li.done');
       const pct = all.length ? Math.round((done.length / all.length) * 100) : 0;
-      const bar = document.getElementById(`pb${i+1}`);
-      const label = document.getElementById(`pp${i+1}`);
-      if (bar) bar.style.width = pct + '%';
-      if (label) label.textContent = pct + '%';
+      const bar = document.getElementById(`pb${i+1}`); const lbl = document.getElementById(`pp${i+1}`);
+      if (bar) bar.style.width = pct + '%'; if (lbl) lbl.textContent = pct + '%';
     });
   }
 
-  window.addEventListener('load', () => {
-    loadProgress();
-    setTimeout(updateProgress, 300);
-  });
+
+  window.addEventListener('load', () => { loadFromCache(); initFirebase(); setTimeout(updateProgress(), 100); });
 </script>
 </body>
 </html>
